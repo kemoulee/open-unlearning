@@ -1,0 +1,10 @@
+# configs/trainer/BSS.yaml
+defaults:
+  - GradDiff
+
+handler: BSS
+method_args:
+  lambda_bss: 0.5          # 论文中的 lambda_BSS
+  n_samples: 3             # 每个prompt生成几个新回答
+  temperature: 1.0         # 生成时的采样温度
+  regeneration_epochs: 2.0 # 每隔2个epoch重新生成一次增强数据

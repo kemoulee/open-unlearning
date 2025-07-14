@@ -7,10 +7,18 @@ from trainer.base import FinetuneTrainer
 from trainer.unlearn.grad_ascent import GradAscent
 from trainer.unlearn.grad_diff import GradDiff
 from trainer.unlearn.npo import NPO
+from trainer.unlearn.npow import NPOW
+from trainer.unlearn.tnpo import TNPO
 from trainer.unlearn.dpo import DPO
 from trainer.unlearn.simnpo import SimNPO
 from trainer.unlearn.rmu import RMU
 from trainer.unlearn.undial import UNDIAL
+from trainer.unlearn.wga import WGA
+from trainer.unlearn.gru import GRU
+from trainer.unlearn.satimp import SatImp
+from trainer.unlearn.bst import BST
+from trainer.unlearn.bstw import BSTW
+from trainer.unlearn.bss import BSS
 
 import logging
 
@@ -86,7 +94,15 @@ _register_trainer(FinetuneTrainer)
 _register_trainer(GradAscent)
 _register_trainer(GradDiff)
 _register_trainer(NPO)
+_register_trainer(NPOW)
+_register_trainer(TNPO)
 _register_trainer(DPO)
 _register_trainer(SimNPO)
 _register_trainer(RMU)
 _register_trainer(UNDIAL)
+_register_trainer(WGA)
+_register_trainer(GRU)
+_register_trainer(SatImp)
+_register_trainer(BST)
+_register_trainer(BSTW)
+_register_trainer(BSS)

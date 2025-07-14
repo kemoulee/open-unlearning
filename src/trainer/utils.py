@@ -45,6 +45,19 @@ def compute_batch_nll(model, inputs):
     return loss, outputs
 
 
+def compute_token_nll(model, inputs):
+    # get the token-level loss for each token in a batch
+    # returns: loss of shape (batch_size, seq_len), outputs
+    outputs = model(**inputs)
+    logits = outputs.logits
+    labels = inputs["labels"]
+    shifted_labels = labels[..., 1:].contiguous()
+    logits = logits[..., :-1, :].contiguous()
+    loss_function = nn.CrossEntropyLoss(ignore_index=-100, reduction="none")
+    loss = loss_function(logits.transpose(-1, -2), shifted_labels)  # (batch_size, seq_len)
+    return loss, outputs
+
+
 def compute_dpo_loss(model, ref_model, win_inputs=None, lose_inputs=None, beta=1.0):
     if win_inputs is None and lose_inputs is None:
         raise ValueError("Both win_inputs and lose_inputs can't be None")

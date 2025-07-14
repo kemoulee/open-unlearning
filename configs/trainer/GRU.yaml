@@ -1,0 +1,12 @@
+defaults:
+  - finetune
+
+handler: GRU
+method_args:
+  gamma_gru: 0.8
+  forget_loss_type: GradAscent 
+
+args:
+  per_device_train_batch_size: 4
+  gradient_accumulation_steps: 8
+ 

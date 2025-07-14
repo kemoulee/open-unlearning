@@ -1,0 +1,12 @@
+defaults:
+  - GradDiff # 继承自GradDiff的默认配置
+
+handler: WGA # 对应您在代码中定义的类名
+
+method_args:
+  # 在这里定义WGA特有的超参数
+  beta: 5.0 
+  # 您也可以覆盖从GradDiff继承的参数
+  gamma: 1.0
+  alpha: 1.0
+  retain_loss_type: NLL

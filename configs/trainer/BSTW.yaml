@@ -1,0 +1,13 @@
+defaults:
+  - GradDiff
+
+handler: BSTW
+method_args:
+  lambda_bst: 0.2
+  bst_mode: "token"
+  detach_mode: "yes"
+  top_k: 20
+  beta: 0.1
+  alpha: 1.0
+  gamma: 1.0
+  retain_loss_type: NLL 

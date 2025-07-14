@@ -1,0 +1,9 @@
+# configs/trainer/BST.yaml
+defaults:
+  - GradDiff
+
+handler: BST
+method_args:
+  lambda_bst: 0.2 
+  top_k: 20
+  retain_loss_type: NLL

@@ -23,7 +23,7 @@ def ks_test(model, **kwargs):
             ]
         )
         fq = ks_2samp(forget_tr_stats, retain_tr_stats)
-        pvalue = fq.pvalue
+        pvalue = np.log(fq.pvalue)
     else:
         logger.warning(
             "retain_model_logs not provided in reference_logs, setting forget_quality to None"
