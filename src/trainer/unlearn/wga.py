@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from trainer.unlearn.base import UnlearnTrainer
 from torch import nn
 from trainer.utils import compute_kl_divergence
@@ -6,10 +7,19 @@ import copy
 
 class WGA(UnlearnTrainer):
     def __init__(self, beta=1.0, gamma=1.0, alpha=1.0, retain_loss_type="NLL", *args, **kwargs):
+=======
+from trainer.unlearn.grad_diff import GradDiff
+from trainer.utils import compute_wga_loss
+
+
+class WGA(GradDiff):
+    def __init__(self, beta=1.0, gamma=1.0, alpha=1.0, *args, **kwargs):
+>>>>>>> main
         super().__init__(*args, **kwargs)
         self.gamma = gamma
         self.alpha = alpha
         self.beta = beta
+<<<<<<< HEAD
         self.retain_loss_type = retain_loss_type
         self.ref_model = None
         if retain_loss_type == "KL":
@@ -60,12 +70,25 @@ class WGA(UnlearnTrainer):
         forget_inputs = inputs["forget"]
         forget_loss = self.compute_wga_loss(model=model, forget_inputs=forget_inputs)
 
+=======
+        if self.ref_model is None:
+            self.ref_model = self._prepare_ref_model(self.model)
+
+    def compute_loss(self, model, inputs, return_outputs=False):
+        forget_inputs = inputs["forget"]
+>>>>>>> main
         forget_inputs = {
             "input_ids": forget_inputs["input_ids"],
             "attention_mask": forget_inputs["attention_mask"],
             "labels": forget_inputs["labels"],
         }
+<<<<<<< HEAD
         forget_outputs = model(**forget_inputs)
+=======
+        forget_loss, forget_outputs = compute_wga_loss(
+            model=model, inputs=forget_inputs, beta=self.beta
+        )
+>>>>>>> main
 
         retain_inputs = inputs["retain"]
         retain_inputs = {
@@ -78,4 +101,8 @@ class WGA(UnlearnTrainer):
         loss = (
             self.gamma * forget_loss + self.alpha * retain_loss
         )  # default gamma=1.0 alpha=1.0
+<<<<<<< HEAD
         return (loss, forget_outputs) if return_outputs else loss
+=======
+        return (loss, forget_outputs) if return_outputs else loss
+>>>>>>> main

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from trainer.unlearn.base import UnlearnTrainer
 from torch import nn
 from trainer.utils import compute_kl_divergence
@@ -7,12 +8,22 @@ import copy
 class SatImp(UnlearnTrainer):
     def __init__(
         self, beta1=5.0, beta2=1.0, gamma=1.0, alpha=0.1, retain_loss_type="NLL", *args, **kwargs
+=======
+from trainer.unlearn.grad_diff import GradDiff
+from trainer.utils import compute_satimp_loss
+
+
+class SatImp(GradDiff):
+    def __init__(
+        self, beta1=5.0, beta2=1.0, gamma=1.0, alpha=0.1, *args, **kwargs
+>>>>>>> main
     ):  # attention, satimp requires two beta!!!!
         super().__init__(*args, **kwargs)
         self.beta1 = beta1
         self.beta2 = beta2
         self.gamma = gamma
         self.alpha = alpha
+<<<<<<< HEAD
         self.retain_loss_type = retain_loss_type
         self.ref_model = None
         if retain_loss_type == "KL":
@@ -66,12 +77,25 @@ class SatImp(UnlearnTrainer):
         forget_inputs = inputs["forget"]
         forget_loss = self.compute_satimp_loss(model=model, forget_inputs=forget_inputs)
 
+=======
+        if self.ref_model is None:
+            self.ref_model = self._prepare_ref_model(self.model)
+
+    def compute_loss(self, model, inputs, return_outputs=False):
+        forget_inputs = inputs["forget"]
+>>>>>>> main
         forget_inputs = {
             "input_ids": forget_inputs["input_ids"],
             "attention_mask": forget_inputs["attention_mask"],
             "labels": forget_inputs["labels"],
         }
+<<<<<<< HEAD
         forget_outputs = model(**forget_inputs)
+=======
+        forget_loss, forget_outputs = compute_satimp_loss(
+            model=model, inputs=forget_inputs, beta1=self.beta1, beta2=self.beta2
+        )
+>>>>>>> main
 
         retain_inputs = inputs["retain"]
         retain_inputs = {
@@ -82,4 +106,8 @@ class SatImp(UnlearnTrainer):
         retain_loss = self.compute_retain_loss(model=model, retain_inputs=retain_inputs)
 
         loss = self.gamma * forget_loss + self.alpha * retain_loss
+<<<<<<< HEAD
         return (loss, forget_outputs) if return_outputs else loss
+=======
+        return (loss, forget_outputs) if return_outputs else loss
+>>>>>>> main

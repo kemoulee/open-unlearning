@@ -13,12 +13,19 @@ from trainer.unlearn.dpo import DPO
 from trainer.unlearn.simnpo import SimNPO
 from trainer.unlearn.rmu import RMU
 from trainer.unlearn.undial import UNDIAL
+<<<<<<< HEAD
 from trainer.unlearn.wga import WGA
 from trainer.unlearn.gru import GRU
 from trainer.unlearn.satimp import SatImp
 from trainer.unlearn.bst import BST
 from trainer.unlearn.bstw import BSTW
 from trainer.unlearn.bss import BSS
+=======
+from trainer.unlearn.ceu import CEU
+from trainer.unlearn.satimp import SatImp
+from trainer.unlearn.wga import WGA
+
+>>>>>>> main
 
 import logging
 
@@ -100,9 +107,15 @@ _register_trainer(DPO)
 _register_trainer(SimNPO)
 _register_trainer(RMU)
 _register_trainer(UNDIAL)
+<<<<<<< HEAD
 _register_trainer(WGA)
 _register_trainer(GRU)
 _register_trainer(SatImp)
 _register_trainer(BST)
 _register_trainer(BSTW)
 _register_trainer(BSS)
+=======
+_register_trainer(CEU)
+_register_trainer(SatImp)
+_register_trainer(WGA)
+>>>>>>> main
