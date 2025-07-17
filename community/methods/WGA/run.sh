@@ -24,8 +24,8 @@ gradient_accumulation_steps=2
 
 
 lrs=(1e-5)
-alphas=(1.0, 0.1, 10.0)
-betas= (1.0)
+alphas=(1.0 0.1 10.0)
+betas=(1.0)
 
 for split in "${forget_retain_splits[@]}"; do
     forget_split=$(echo $split | cut -d' ' -f1)
