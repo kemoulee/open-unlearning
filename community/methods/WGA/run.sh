@@ -59,7 +59,11 @@ for split in "${forget_retain_splits[@]}"; do
                         trainer.args.learning_rate=$lr \
                         trainer.method_args.beta1=$beta1 \
                         trainer.method_args.beta2=$beta2 \
-                        trainer.method_args.alpha=$alpha
+                        trainer.method_args.alpha=$alpha \
+                        trainer.args.report_to=null \
+                        paths.output_dir=saves/unlearn/${trainer}/${task_name}
+                        echo "Unlearning completed for ${task_name}"
+                        
 
                         # Eval
                         CUDA_VISIBLE_DEVICES=0 python src/eval.py \
@@ -70,6 +74,15 @@ for split in "${forget_retain_splits[@]}"; do
                         model.model_args.pretrained_model_name_or_path=saves/unlearn/${task_name} \
                         paths.output_dir=saves/unlearn/${task_name}/evals \
                         retain_logs_path=saves/eval/tofu_${model}_${retain_split}/TOFU_EVAL.json
+                        echo "Evaluation completed for ${task_name}"
+
+                        # Move evals folder, delete everything, then move evals back
+                        echo "Cleaning up model files for ${task_name}, keeping evals..."
+                        mv saves/unlearn/${task_name}/evals /tmp/evals_${task_name}
+                        rm -rf saves/unlearn/${task_name}
+                        mkdir -p saves/unlearn/${task_name}
+                        mv /tmp/evals_${task_name} saves/unlearn/${task_name}/evals
+                        echo "Model files deleted for ${task_name}, evals folder preserved"
                     done
                 done
             done
