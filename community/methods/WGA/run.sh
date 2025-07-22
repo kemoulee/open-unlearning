@@ -25,7 +25,7 @@ gradient_accumulation_steps=2
 
 lrs=(1e-5)
 alphas=(1.0 0.1 10.0)
-betas=(1.0)
+betas=(1.0 5.0 7.0 10.0)
 
 for split in "${forget_retain_splits[@]}"; do
     forget_split=$(echo $split | cut -d' ' -f1)
@@ -35,14 +35,13 @@ for split in "${forget_retain_splits[@]}"; do
             trainer=$(echo $trainer_experiment | cut -d' ' -f1)
             experiment=$(echo $trainer_experiment | cut -d' ' -f2)
             for lr in "${lrs[@]}"; do
-                for beta1 in "${betas[@]}"; do 
+                for beta in "${betas[@]}"; do 
                     for alpha in "${alphas[@]}"; do          
-                        task_name=tofu_${model}_${forget_split}_${trainer}_lr${lr}_beta${beta1}_alpha${alpha}
+                        task_name=tofu_${model}_${forget_split}_${trainer}_lr${lr}_beta${beta}_alpha${alpha}
                         model_path=open-unlearning/tofu_${model}_full
                         echo ${task_name}: Unlearning ${model_path} using ${trainer}
 
                         # Unlearn
-                        CUDA_VISIBLE_DEVICES=0 \
                         python src/train.py --config-name=unlearn.yaml \
                         experiment=${experiment} \
                         trainer=${trainer} \
@@ -57,8 +56,7 @@ for split in "${forget_retain_splits[@]}"; do
                         trainer.args.eval_strategy=no \
                         trainer.args.eval_on_start=False \
                         trainer.args.learning_rate=$lr \
-                        trainer.method_args.beta1=$beta1 \
-                        trainer.method_args.beta2=$beta2 \
+                        trainer.method_args.beta=$beta \
                         trainer.method_args.alpha=$alpha \
                         trainer.args.report_to=null \
                         paths.output_dir=saves/unlearn/${trainer}/${task_name}
@@ -66,22 +64,22 @@ for split in "${forget_retain_splits[@]}"; do
                         
 
                         # Eval
-                        CUDA_VISIBLE_DEVICES=0 python src/eval.py \
+                        python src/eval.py \
                         experiment=eval/tofu/default.yaml \
                         forget_split=${forget_split} \
                         model=${model} \
                         task_name=${task_name} \
-                        model.model_args.pretrained_model_name_or_path=saves/unlearn/${task_name} \
-                        paths.output_dir=saves/unlearn/${task_name}/evals \
+                        model.model_args.pretrained_model_name_or_path=saves/unlearn/${trainer}/${task_name} \
+                        paths.output_dir=saves/unlearn/${trainer}/${task_name}/evals \
                         retain_logs_path=saves/eval/tofu_${model}_${retain_split}/TOFU_EVAL.json
                         echo "Evaluation completed for ${task_name}"
 
                         # Move evals folder, delete everything, then move evals back
                         echo "Cleaning up model files for ${task_name}, keeping evals..."
-                        mv saves/unlearn/${task_name}/evals /tmp/evals_${task_name}
-                        rm -rf saves/unlearn/${task_name}
-                        mkdir -p saves/unlearn/${task_name}
-                        mv /tmp/evals_${task_name} saves/unlearn/${task_name}/evals
+                        mv saves/unlearn/${trainer}/${task_name}/evals /tmp/evals_${task_name}
+                        rm -rf saves/unlearn/${trainer}/${task_name}
+                        mkdir -p saves/unlearn/${trainer}/${task_name}
+                        mv /tmp/evals_${task_name} saves/unlearn/${trainer}/${task_name}/evals
                         echo "Model files deleted for ${task_name}, evals folder preserved"
                     done
                 done
