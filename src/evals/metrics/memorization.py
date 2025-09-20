@@ -255,3 +255,56 @@ def extraction_strength(model, **kwargs):
     )
     es_values = aggregate_to_1D(es_values)
     return {"agg_value": np.mean(es_values), "value_by_index": scores_by_index}
+
+
+@unlearning_metric(name="mod_truth_ratio")
+def mod_truth_ratio(model, **kwargs):
+    import numpy as np
+    from evals.metrics.utils import aggregate_to_1D
+
+    # 聚合器与 truth_ratio 一致
+    def closer_to_1_better(arr):
+        return np.mean(np.minimum(arr, 1 / (arr + 1e-10)))
+
+    def true_better(arr):
+        return np.mean(np.maximum(0, 1 - arr))
+
+    if kwargs["aggregator"] == "closer_to_1_better":
+        aggregator = closer_to_1_better
+    elif kwargs["aggregator"] == "true_better":
+        aggregator = true_better
+    else:
+        raise ValueError(f"Invalid truth ratio aggregator: {kwargs['aggregator']}")
+
+    correct_answer_results = kwargs["pre_compute"]["correct"]["value_by_index"]
+    wrong_answer_results = kwargs["pre_compute"]["wrong"]["value_by_index"]
+
+    correct_indices = list(correct_answer_results.keys())
+    wrong_indices = list(wrong_answer_results.keys())
+    assert correct_indices == wrong_indices
+
+    filtered_indices = [
+        idx
+        for idx in correct_indices
+        if correct_answer_results[idx] is not None
+        and wrong_answer_results[idx] is not None
+    ]
+    correct_avg_losses = [
+        correct_answer_results[idx]["avg_loss"] for idx in filtered_indices
+    ]
+    wrong_avg_losses = [
+        wrong_answer_results[idx]["avg_loss"] for idx in filtered_indices
+    ]
+
+    correct_avg_losses = aggregate_to_1D(np.array(correct_avg_losses))
+    wrong_avg_losses = aggregate_to_1D(np.array(wrong_avg_losses))
+
+    # 核心改动：mod_truth_ratios = 1 / (1 + exp(correct_avg_losses - wrong_avg_losses))
+    mod_truth_ratios = 1 / (1 + np.exp(correct_avg_losses - wrong_avg_losses))
+
+    value_by_index = dict(
+        zip(correct_indices, [{"score": val} for val in mod_truth_ratios])
+    )
+    stats = np.array([evals["score"] for evals in value_by_index.values()])
+    agg = aggregator(stats)
+    return {"agg_value": agg, "value_by_index": value_by_index}

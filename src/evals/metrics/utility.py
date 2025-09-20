@@ -74,3 +74,22 @@ def classifier_prob(model, **kwargs):
     )
     class_scores = aggregate_to_1D(class_scores)
     return {"agg_value": np.mean(class_scores), "value_by_index": scores_by_index}
+
+
+@unlearning_metric(name="memorization")
+def memorization(model, **kwargs):
+    import numpy as np
+    import scipy as sc
+
+    eps = 1e-10
+    # 对预计算得到的四个指标取 1 - agg_value，然后做调和平均
+    values = []
+    for _, result in kwargs["pre_compute"].items():
+        v = result.get("agg_value", None)
+        if v is None:
+            continue
+        values.append(max(eps, 1.0 - float(v)))  # 保证 >0 以适配 hmean
+
+    assert len(values) > 0, "No pre-compute agg_value available for memorization"
+    agg = sc.stats.hmean(values)
+    return {"agg_value": float(agg)}

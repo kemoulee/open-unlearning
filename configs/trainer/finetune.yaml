@@ -9,7 +9,8 @@ args:
   logging_steps: 5
   output_dir: ${paths.output_dir}
   logging_dir: ${trainer.args.output_dir}/logs
-  report_to: wandb
+  # report_to: wandb
+  report_to: none
   run_name: ${task_name}
   ddp_find_unused_parameters: None
   gradient_checkpointing: False

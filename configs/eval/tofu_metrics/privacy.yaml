@@ -1,0 +1,9 @@
+# @package eval.tofu.metrics.privacy
+defaults:
+  - .@pre_compute.mia_min_k_plus_plus: mia_min_k_plus_plus
+  - .@pre_compute.mia_min_k: mia_min_k
+  - .@pre_compute.mia_loss: mia_loss
+  - .@pre_compute.mia_zlib: mia_zlib
+
+
+handler: hm_aggregate

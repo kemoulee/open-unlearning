@@ -94,12 +94,14 @@ def evaluate_probability(model, batch):
     num_token_gt = (batch["labels"] != IGNORE_INDEX).sum(-1)
     avg_losses = losses / num_token_gt
     normalized_probs = torch.exp(-avg_losses)
+    log_probs = -losses
 
     avg_losses = avg_losses.cpu().numpy().tolist()
     normalized_probs = normalized_probs.cpu().numpy().tolist()
+    log_probs = log_probs.cpu().numpy().tolist()
     return [
-        {"prob": prob, "avg_loss": avg_loss}
-        for prob, avg_loss in zip(normalized_probs, avg_losses)
+        {"log_prob": log_prob, "prob": prob, "avg_loss": avg_loss}
+        for log_prob, prob, avg_loss in zip(log_probs, normalized_probs, avg_losses)
     ]
 
 
